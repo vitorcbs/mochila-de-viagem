@@ -18,7 +18,7 @@ formulario.addEventListener("submit", (evento) => {
   const itemExists = itemList.find(
     (element) => element.nome === nomeInput.value
   );
-  
+
   if (itemExists) {
     // Atualiza apenas a quantidade do item existente
     itemExists.quantidade = quantidadeInput.value;
@@ -44,6 +44,9 @@ function buildItem(item) {
   card.classList.add("item");
   card.innerHTML = `<strong>${item.quantidade}</strong>${item.nome}`;
   card.dataset.id = item.id;
+
+  const deleteBtn = deleteButton(item.nome);
+  card.appendChild(deleteBtn);
   return card;
 }
 
@@ -73,17 +76,39 @@ function updateItem(item) {
   const card = document.querySelector(`[data-id="${item.id}"]`);
   if (card) {
     card.innerHTML = `<strong>${item.quantidade}</strong>${item.nome}`;
+    const deleteBtn = deleteButton(item.nome);
+    card.appendChild(deleteBtn);
   }
 }
 
-function updateLocalStorage(){
-  localStorage.setItem("itens", JSON.stringify(itemList))
-}
-
-function deleteFromLocalStorage(){
-  localStorage.removeItem("itens", JSON.stringify(itemList))
+function updateLocalStorage() {
+  localStorage.setItem("itens", JSON.stringify(itemList));
 }
 
 function generateId() {
   return Date.now().toString(); // Gera um ID único baseado no timestamp atual
+}
+
+function deleteButton(nome) {
+  const button = document.createElement("button");
+  button.innerText = "X";
+  button.classList.add("botao");
+  // const button = document.getElementsByClassName('button')
+  button.addEventListener("click", function () {
+    deleteElement(this.parentNode, nome); //remove a tag atrelada ao elemento pai li
+  });
+
+  return button;
+}
+
+function deleteElement(tag, nome) {
+  tag.remove();
+
+  itemList.splice(
+    itemList.findIndex((element) => {
+      element.nome === nome;
+    })
+  );
+
+  updateLocalStorage();
 }
